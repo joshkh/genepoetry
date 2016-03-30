@@ -6,7 +6,7 @@
 
 (def wordnet (make-dictionary "data/dict/"))
 
-(def dog (first (wordnet "NLP")))
+(def run (take 10 (wordnet "gohsgousdogusdg")))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -18,7 +18,7 @@
     (doall
       (csv/read-csv in-file :separator \tab))))
 
-(def genes (read-gene-data))
+(def genes (vec (read-gene-data)))
 
 (defn isword? [gene]
   (some? (first (wordnet gene))))
@@ -26,35 +26,22 @@
 (defn unnamed? [val]
   (= "unnamed" val))
 
-(defn doit []
-  (remove empty? (reduce (fn [m next]
-            (conj m (filter isword? next))) [] genes)))
+(defn lookup-gene [data]
+  (remove nil? (map-indexed (fn [idx datum]
+                              (let [words (take 10 (wordnet datum))]
+                                (if-not (empty? words)
+                                  (let [pos (distinct (map :pos words))]
+                                    {:identifier (first data)
+                                     :genetic-word datum
+                                     :english-word (:lemma (first words))
+                                     :pos pos
+                                     :attribute (nth (first genes) idx)})))) data)))
 
-; (println dog)
+; (defn tester []
+;   (mapcat lookup-gene (take 10000 (rest genes))))
 
-(println (doit))
+(defn parse-genes []
+  (mapcat lookup-gene (rest genes)))
 
-; (explain)
-
-
-;   (defn read-gene-data []
-;     (with-open [in-file (io/reader "resources/genes-synonyms.tsv")]
-;       (doall
-;         (csv/read-csv in-file :separator \tab))))
-;
-;   (defn read-dictionary []
-;     (with-open [in-file (io/reader "resources/sowpods.txt")]
-;       (doall
-;         (csv/read-csv in-file))))
-;
-;   (def genes (vec (flatten (map clojure.string/lower-case (read-gene-data)))))
-;   (def dictionary (vec (flatten (read-dictionary))))
-;
-;   (defn cross []
-;     (println "type" (take 5 genes))
-;     (println "type2" (take 5 dictionary))
-;     (println "diff" (count (nth (diff genes dictionary) 2)))
-;     )
-;
-;
-; (cross)
+(defn write-contents [contents]
+  (clojure.pprint/pprint (vec (remove empty? contents)) (clojure.java.io/writer "data.edn")))
