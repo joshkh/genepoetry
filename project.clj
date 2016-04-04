@@ -8,7 +8,8 @@
                  [ring/ring-json "0.3.1"]
                  [ring "1.4.0"]
                  [org.clojure/data.csv "0.1.3"]
-                 [clj-wordnet "0.1.0"]]
+                 [clj-wordnet "0.1.0"]
+                 [cljs-http "0.1.40"]]
 
   :min-lein-version "2.5.3"
 

@@ -11,3 +11,8 @@
  :active-panel
  (fn [db _]
    (reaction (:active-panel @db))))
+
+(re-frame/register-sub
+  :magnets
+  (fn [db]
+    (reaction (:magnets @db))))
